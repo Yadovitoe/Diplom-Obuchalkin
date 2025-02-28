@@ -1,0 +1,83 @@
+﻿@{
+    Layout = null; // Отключаем макет
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/Manager.css" />
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
+        <h1>Менеджер</h1>
+        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+    </div>
+
+    <div class="container">
+        <h2>Регистрация новых пользователей</h2>
+        @using (Html.BeginForm("Register", "Manager", FormMethod.Post))
+        {
+            <div class="form-group">
+                @Html.Label("ФИО:")
+                @Html.TextBox("fullName", null, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="form-group">
+                @Html.Label("Логин:")
+                @Html.TextBox("login", null, new { @class = "form-control", required = "required" })
+            </div>
+            <div class="form-group">
+                @Html.Label("Пароль:")
+                <div class="password-container">
+                    @Html.Password("password", null, new { @class = "form-control", required = "required", id = "passwordField" })
+                    <label class="show-password-label">
+                        <input type="checkbox" id="showPassword" /> Показать пароль
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Роль:")
+                @Html.DropDownList("role", new SelectList(new[] { "Обучающийся", "Менеджер", "Специалист по обучению" }), new { @class = "form-control" })
+            </div>
+            <button type="submit" class="btn">Зарегистрировать</button>
+        }
+
+        <div class="user-list">
+            <h2>Зарегистрированные пользователи</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Логин</th>
+                        <th>Роль</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Login</td>
+                            <td>@user.Role</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript для переключения видимости пароля
+        document.getElementById('showPassword').addEventListener('change', function () {
+            var passwordField = document.getElementById('passwordField');
+            if (this.checked) {
+                passwordField.type = 'text'; // Показываем пароль
+            } else {
+                passwordField.type = 'password'; // Скрываем пароль
+            }
+        });
+    </script>
+</body>
+</html>

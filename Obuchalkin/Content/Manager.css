@@ -1,0 +1,123 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #d3dad9;
+    margin: 0;
+    padding: 0;
+    color: #2d0645;
+}
+
+.header {
+    background-color: #2d0645;
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+    .header h1 {
+        margin: 0;
+        font-size: 24px;
+        margin-left: 10px;
+    }
+
+    .header a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        margin-left: auto;
+    }
+
+.logo {
+    height: 60px; /* Увеличенный размер логотипа */
+    width: auto;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #2d0645;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 50%; /* Уменьшенная ширина полей ввода */
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2d0645;
+            outline: none;
+        }
+
+.password-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.show-password-label {
+    white-space: nowrap;
+    font-weight: normal; /* Убираем жирный шрифт */
+    margin-bottom: 0; /* Убираем отступ снизу */
+}
+
+.btn {
+    background-color: #2d0645;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .btn:hover {
+        background-color: #4a0a6e;
+    }
+
+.user-list {
+    margin-top: 30px;
+}
+
+    .user-list table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .user-list th,
+    .user-list td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    .user-list th {
+        background-color: #2d0645;
+        color: white;
+    }
+
+    .user-list tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }

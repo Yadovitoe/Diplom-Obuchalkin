@@ -1,0 +1,50 @@
+﻿@model Obuchalkin.Models.Result
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Result</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Course)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Course)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AttemptsUsed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AttemptsUsed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BestResult)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BestResult)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Password)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Password)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
