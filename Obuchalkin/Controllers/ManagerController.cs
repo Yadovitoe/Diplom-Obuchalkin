@@ -7,84 +7,29 @@ using Obuchalkin.Models;
 
 namespace Obuchalkin.Controllers
 {
+    [Authorize]
     public class ManagerController : Controller
     {
-        // GET: Manager
+        private ObuchalkinEntities db = new ObuchalkinEntities();
+
         public ActionResult Index()
         {
-            return View(new List<User>()); // Пустой список
-        }
-
-        // GET: Manager/Details/5
-        //public ActionResult Details(int id)
-        //{
-        //    return View();
-        //}
-
-        // GET: Manager/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Manager/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            var user = db.Users.FirstOrDefault(u => u.Login == User.Identity.Name);
+            if (user == null || user.Position != "Менеджер")
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Authorization");
             }
-            catch
-            {
-                return View();
-            }
+            var users = db.Users.ToList();
+            return View(users);
         }
 
-        // GET: Manager/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Manager/Edit/5
-        //[HttpPost]
-        //public ActionResult Edit(int id, FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add update logic here
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        // GET: Manager/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Manager/Delete/5
-        //[HttpPost]
-        //public ActionResult Delete(int id, FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

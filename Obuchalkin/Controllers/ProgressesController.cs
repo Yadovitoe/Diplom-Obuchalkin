@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Obuchalkin.Models;
 
 namespace Obuchalkin.Controllers
 {
+    [Authorize]
     public class ProgressesController : Controller
     {
         private ObuchalkinEntities db = new ObuchalkinEntities();
 
-        // GET: Progresses
+        // GET: Progresses/Index
         public ActionResult Index()
         {
             var progresses = db.Progresses.Include(p => p.User);
@@ -39,13 +36,11 @@ namespace Obuchalkin.Controllers
         // GET: Progresses/Create
         public ActionResult Create()
         {
-            ViewBag.Login = new SelectList(db.Users, "Login", "Password");
+            ViewBag.Login = new SelectList(db.Users, "Login", "FullName");
             return View();
         }
 
         // POST: Progresses/Create
-        // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-        // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,Login,Course,Section,Page,TestCompleted")] Progress progress)
@@ -57,7 +52,7 @@ namespace Obuchalkin.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Login = new SelectList(db.Users, "Login", "Password", progress.Login);
+            ViewBag.Login = new SelectList(db.Users, "Login", "FullName", progress.Login);
             return View(progress);
         }
 
@@ -73,13 +68,11 @@ namespace Obuchalkin.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.Login = new SelectList(db.Users, "Login", "Password", progress.Login);
+            ViewBag.Login = new SelectList(db.Users, "Login", "FullName", progress.Login);
             return View(progress);
         }
 
         // POST: Progresses/Edit/5
-        // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-        // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,Login,Course,Section,Page,TestCompleted")] Progress progress)
@@ -90,7 +83,7 @@ namespace Obuchalkin.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.Login = new SelectList(db.Users, "Login", "Password", progress.Login);
+            ViewBag.Login = new SelectList(db.Users, "Login", "FullName", progress.Login);
             return View(progress);
         }
 

@@ -1,0 +1,47 @@
+﻿@{
+    Layout = null; // Отключаем макет
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Управление курсами</title>
+    <link rel="stylesheet" href="~/Content/Styles/Coach.css" />
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
+        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+    </div>
+
+    <div class="container">
+        <!-- Кнопка создания нового курса -->
+        <div class="section">
+            <button class="btn" onclick="location.href='@Url.Action("CreateCourse", "Manager")'">Создать новый курс</button>
+        </div>
+
+        <!-- Список курсов -->
+        <div class="section">
+            <h2>Список курсов</h2>
+            <div class="course-list">
+                <!-- Пример курса 1 -->
+                <div class="course-item">
+                    <h3>Курс 1: Основы программирования</h3>
+                    <p>Описание: Введение в программирование на Python.</p>
+                    <button class="btn" onclick="location.href='@Url.Action("EditCourse", "Manager", new { id = 1 })'">Редактировать</button>
+                    <button class="btn btn-danger" onclick="confirmDelete(1)">Удалить</button>
+                </div>
+
+                <!-- Пример курса 2 -->
+                <div class="course-item">
+                    <h3>Курс 2: Веб-разработка</h3>
+                    <p>Описание: Основы HTML, CSS и JavaScript.</p>
+                    <button class="btn" onclick="location.href='@Url.Action("EditCourse", "Manager", new { id = 2 })'">Редактировать</button>
+                    <button class="btn btn-danger" onclick="confirmDelete(2)">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

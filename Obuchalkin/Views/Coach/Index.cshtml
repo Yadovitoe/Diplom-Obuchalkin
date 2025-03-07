@@ -1,5 +1,6 @@
 ﻿@{
     Layout = null; // Отключаем макет
+    ViewBag.Title = "Тренер";
 }
 
 <!DOCTYPE html>
@@ -7,19 +8,17 @@
 <head>
     <meta charset="utf-8" />
     <title>Специалист по обучению</title>
-    <link rel="stylesheet" href="~/Content/Manager.css" />
+    <link rel="stylesheet" href="~/Content/Styles/Coach.css" />
 </head>
 <body>
     <div class="header">
         <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
-        <h1>Специалист по обучению</h1>
         <a href="@Url.Action("Logout", "Account")">Выйти</a>
     </div>
 
     <div class="container">
         <!-- Навигация -->
         <div class="navigation">
-            <a href="#groups" class="btn">Управление группами</a>
             <a href="#courses" class="btn">Управление курсами и тестами</a>
             <a href="#results" class="btn">Результаты обучающихся</a>
         </div>
@@ -32,18 +31,22 @@
                 <div class="group-item">
                     <h3>Группа 1</h3>
                     <p>Количество пользователей: 15</p>
-                    <button class="btn">Назначить курс</button>
-                    <button class="btn">Назначить тест</button>
-                    <button class="btn">Редактировать</button>
-                    <button class="btn btn-danger">Удалить</button>
+                    <div class="actions">
+                        <button class="btn">Назначить курс</button>
+                        <button class="btn">Просмотреть</button>
+                        <button class="btn">Редактировать</button>
+                        <button class="btn btn-danger">Удалить</button>
+                    </div>
                 </div>
                 <div class="group-item">
                     <h3>Группа 2</h3>
                     <p>Количество пользователей: 10</p>
-                    <button class="btn">Назначить курс</button>
-                    <button class="btn">Назначить тест</button>
-                    <button class="btn">Редактировать</button>
-                    <button class="btn btn-danger">Удалить</button>
+                    <div class="actions">
+                        <button class="btn">Назначить курс</button>
+                        <button class="btn">Просмотреть</button>
+                        <button class="btn">Редактировать</button>
+                        <button class="btn btn-danger">Удалить</button>
+                    </div>
                 </div>
             </div>
         </div>

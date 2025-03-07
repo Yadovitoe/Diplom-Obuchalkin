@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Obuchalkin.Models;
+using BCrypt.Net;
 
 namespace Obuchalkin.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private ObuchalkinEntities db = new ObuchalkinEntities();
 
-        // GET: Users
+        // GET: Users/Index
         public ActionResult Index()
         {
             return View(db.Users.ToList());
@@ -42,14 +40,13 @@ namespace Obuchalkin.Controllers
         }
 
         // POST: Users/Create
-        // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-        // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Login,Password,FullName,Position")] User user)
         {
             if (ModelState.IsValid)
             {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); // Хешируем пароль
                 db.Users.Add(user);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -74,16 +71,24 @@ namespace Obuchalkin.Controllers
         }
 
         // POST: Users/Edit/5
-        // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-        // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Login,Password,FullName,Position")] User user)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                var existingUser = db.Users.Find(user.Login);
+                if (existingUser != null)
+                {
+                    existingUser.FullName = user.FullName;
+                    existingUser.Position = user.Position;
+                    if (!string.IsNullOrEmpty(user.Password) && !user.Password.StartsWith("$2a$") && !user.Password.StartsWith("$2b$"))
+                    {
+                        existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    }
+                    db.Entry(existingUser).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 return RedirectToAction("Index");
             }
             return View(user);

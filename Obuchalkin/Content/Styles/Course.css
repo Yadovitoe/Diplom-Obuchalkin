@@ -1,0 +1,91 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Выезжающая панель */
+.sidebar {
+    width: 250px;
+    background-color: #2d0645;
+    color: white;
+    padding: 20px;
+    transition: width 0.3s;
+}
+
+    .sidebar.collapsed {
+        width: 60px;
+    }
+
+    .sidebar h2 {
+        margin-top: 0;
+        font-size: 20px;
+    }
+
+    .sidebar.collapsed h2 {
+        display: none;
+    }
+
+.sections-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .sections-list li {
+        margin: 10px 0;
+    }
+
+    .sections-list a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+        .sections-list a:hover {
+            background-color: #4a0a6e;
+        }
+
+.sidebar.collapsed .sections-list a {
+    text-align: center;
+    padding: 10px 0;
+}
+
+    .sidebar.collapsed .sections-list a span {
+        display: none;
+    }
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+/* Основной контент */
+.main-content {
+    flex: 1;
+    background-color: #f0f2f5;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.course-image {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+}

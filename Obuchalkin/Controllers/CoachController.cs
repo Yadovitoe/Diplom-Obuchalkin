@@ -3,87 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Obuchalkin.Models;
 
 namespace Obuchalkin.Controllers
 {
+    [Authorize]
     public class CoachController : Controller
     {
-        // GET: Couch
+        private ObuchalkinEntities db = new ObuchalkinEntities();
+
         public ActionResult Index()
         {
+            var user = db.Users.FirstOrDefault(u => u.Login == User.Identity.Name);
+            if (user == null || user.Position != "Специалист по обучению")
+            {
+                return RedirectToAction("Index", "Authorization");
+            }
             return View();
         }
 
-        // GET: Couch/Details/5
-        public ActionResult Details(int id)
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        // GET: Couch/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Couch/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Couch/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Couch/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Couch/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Couch/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }

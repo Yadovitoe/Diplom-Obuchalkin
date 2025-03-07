@@ -1,0 +1,99 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #2d0645;
+    background-color: #21093a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.logo-container {
+    margin-bottom: 20px;
+}
+
+.logo {
+    height: 80px; /* Увеличенный размер логотипа */
+    width: auto;
+}
+
+.auth-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #2d0645;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: normal; /* Убираем жирный шрифт */
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+    input[type="text"]:focus, input[type="password"]:focus {
+        border-color: #2d0645;
+        outline: none;
+    }
+
+.password-container {
+    position: relative;
+}
+
+.show-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.remember-me-container {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me {
+    margin-left: 5px;
+    font-weight: normal; /* Убираем жирный шрифт */
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #2d0645;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .btn:hover {
+        background-color: #4a0a6e;
+    }

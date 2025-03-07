@@ -14,22 +14,16 @@
     align-items: center;
 }
 
-    .header h1 {
-        margin: 0;
-        font-size: 24px;
-        margin-left: 10px;
-    }
-
-    .header a {
-        color: white;
-        text-decoration: none;
-        font-size: 16px;
-        margin-left: auto;
-    }
-
 .logo {
-    height: 60px; /* Увеличенный размер логотипа */
+    height: 50px;
     width: auto;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    margin-left: auto;
 }
 
 .container {
@@ -48,21 +42,23 @@ h2 {
 
 .form-group {
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
     .form-group label {
-        display: block;
         margin-bottom: 5px;
         font-weight: bold;
     }
 
     .form-group input,
     .form-group select {
-        width: 50%; /* Уменьшенная ширина полей ввода */
+        width: 100%;
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 16px;
+        box-sizing: border-box;
     }
 
         .form-group input:focus,
@@ -72,15 +68,18 @@ h2 {
         }
 
 .password-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    position: relative;
 }
 
-.show-password-label {
-    white-space: nowrap;
-    font-weight: normal; /* Убираем жирный шрифт */
-    margin-bottom: 0; /* Убираем отступ снизу */
+.show-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2d0645;
 }
 
 .btn {
@@ -91,6 +90,7 @@ h2 {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    width: 100%;
 }
 
     .btn:hover {

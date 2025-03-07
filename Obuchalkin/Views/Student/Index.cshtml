@@ -1,0 +1,113 @@
+﻿@{
+    Layout = null; // Отключаем макет
+    ViewBag.Title = "Студент";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Личный кабинет обучающегося</title>
+    <link rel="stylesheet" href="~/Content/Styles/Student.css" />
+    <!-- Подключаем Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
+        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+    </div>
+
+    <div class="container">
+        <!-- Навигация -->
+        <div class="navigation">
+            <button class="btn" onclick="showSection('courses')">Курсы</button>
+            <button class="btn" onclick="showSection('progress')">Прогресс</button>
+            <button class="btn" onclick="showSection('results')">Результаты</button>
+        </div>
+
+        <!-- Список курсов -->
+        <div id="courses" class="section active">
+            <h2>Доступные курсы</h2>
+            <div class="course-list">
+                <div class="course-item">
+                    <h3>Курс 1: Основы программирования</h3>
+                    <p>Описание: Введение в программирование на Python.</p>
+                    <button class="btn" onclick="startCourse(1)">Начать курс</button>
+                </div>
+                <div class="course-item">
+                    <h3>Курс 2: Веб-разработка</h3>
+                    <p>Описание: Основы HTML, CSS и JavaScript.</p>
+                    <button class="btn" onclick="startCourse(2)">Начать курс</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Прогресс -->
+        <div id="progress" class="section">
+            <h2>Прогресс</h2>
+            <div class="progress-list">
+                <div class="progress-item">
+                    <h3>Курс 1: Основы программирования</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 60%;"></div>
+                    </div>
+                    <p>60% завершено</p>
+                </div>
+                <div class="progress-item">
+                    <h3>Курс 2: Веб-разработка</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 30%;"></div>
+                    </div>
+                    <p>30% завершено</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Результаты тестирования -->
+        <div id="results" class="section">
+            <h2>Результаты тестирования</h2>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Курс</th>
+                        <th>Тест</th>
+                        <th>Результат</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Основы программирования</td>
+                        <td>Тест 1</td>
+                        <td>85%</td>
+                    </tr>
+                    <tr>
+                        <td>Веб-разработка</td>
+                        <td>Тест 1</td>
+                        <td>90%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Функция для переключения между разделами
+        function showSection(sectionId) {
+            // Скрываем все разделы
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Показываем выбранный раздел
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Функция для начала курса
+        function startCourse(courseId) {
+            alert(`Начало курса с ID: ${courseId}`);
+            // Здесь можно добавить логику для перехода на страницу курса
+        }
+    </script>
+</body>
+</html>

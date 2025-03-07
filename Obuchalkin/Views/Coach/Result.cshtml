@@ -1,0 +1,45 @@
+﻿@{
+    Layout = null; // Отключаем макет
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Результаты обучения</title>
+    <link rel="stylesheet" href="~/Content/Styles/Coach.css" />
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
+        <h1>Специалист по обучению</h1>
+        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+    </div>
+
+    <div class="container">
+        <!-- Кнопки экспорта -->
+        <div class="section">
+            <h2>Результаты обучающихся</h2>
+            <div class="export-buttons">
+                <button class="btn" onclick="exportToCSV()">
+                    <img src="~/Content/Image/icon-export.png" alt="CSV" class="icon" />
+                </button>
+            </div>
+        </div>
+        <!-- Таблица с результатами -->
+        <div class="section">
+            <h2>Результаты обучающихся</h2>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th>Курс</th>
+                        <th>Попытки</th>
+                        <th>Лучший результат</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
