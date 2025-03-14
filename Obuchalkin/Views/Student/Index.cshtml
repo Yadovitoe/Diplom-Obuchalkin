@@ -1,5 +1,7 @@
-﻿@{
-    Layout = null; // Отключаем макет
+﻿@model Obuchalkin.Models.StudentIndexViewModel
+
+@{
+    Layout = null;
     ViewBag.Title = "Студент";
 }
 
@@ -9,105 +11,128 @@
     <meta charset="utf-8" />
     <title>Личный кабинет обучающегося</title>
     <link rel="stylesheet" href="~/Content/Styles/Student.css" />
-    <!-- Подключаем Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script defer>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function startCourse(courseId) {
+            window.location.href = '@Url.Action("Course", "Student")' + '?id=' + courseId;
+        }
+
+        function resetAttempts(login, courseId) {
+            if (confirm('Сбросить попытки для ' + login + ' по курсу ' + courseId + '?')) {
+                fetch('@Url.Action("ResetTestAttempts", "Student")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ login: login, courseId: courseId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Попытки сброшены!');
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => alert('Ошибка сброса попыток: ' + error));
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="header">
         <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
-        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+        <a href="@Url.Action("Logout", "Authorization")">Выйти</a>
     </div>
 
     <div class="container">
-        <!-- Навигация -->
         <div class="navigation">
             <button class="btn" onclick="showSection('courses')">Курсы</button>
             <button class="btn" onclick="showSection('progress')">Прогресс</button>
             <button class="btn" onclick="showSection('results')">Результаты</button>
         </div>
 
-        <!-- Список курсов -->
         <div id="courses" class="section active">
             <h2>Доступные курсы</h2>
             <div class="course-list">
-                <div class="course-item">
-                    <h3>Курс 1: Основы программирования</h3>
-                    <p>Описание: Введение в программирование на Python.</p>
-                    <button class="btn" onclick="startCourse(1)">Начать курс</button>
-                </div>
-                <div class="course-item">
-                    <h3>Курс 2: Веб-разработка</h3>
-                    <p>Описание: Основы HTML, CSS и JavaScript.</p>
-                    <button class="btn" onclick="startCourse(2)">Начать курс</button>
-                </div>
+                @foreach (var course in Model.Courses)
+                {
+                    <div class="course-item">
+                        <h3>@course.Title</h3>
+                        <p>Описание: @course.Description</p>
+                        <button class="btn" onclick="startCourse(@course.ID)">Начать курс</button>
+                    </div>
+                }
             </div>
         </div>
 
-        <!-- Прогресс -->
         <div id="progress" class="section">
             <h2>Прогресс</h2>
             <div class="progress-list">
-                <div class="progress-item">
-                    <h3>Курс 1: Основы программирования</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 60%;"></div>
+                @foreach (var course in Model.Courses)
+                {
+                    var progress = Model.Progresses.FirstOrDefault(p => p.Course == course.ID.ToString());
+                    int completedPages = progress != null && progress.Page.HasValue ? progress.Page.Value : 0;
+                    int totalPages = course.Pages.Count + (course.Tests.Any() ? 1 : 0);
+                    float percentage = totalPages > 0 ? (completedPages / (float)totalPages) * 100 : 0;
+                    var percentageWidth = percentage.ToString("F0") + "%";
+
+                    <div class="progress-item">
+                        <h3>@course.Title</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: @percentageWidth;"></div>
+                        </div>
+                        <p>@((int)percentage)% завершено</p>
                     </div>
-                    <p>60% завершено</p>
-                </div>
-                <div class="progress-item">
-                    <h3>Курс 2: Веб-разработка</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 30%;"></div>
-                    </div>
-                    <p>30% завершено</p>
-                </div>
+                }
             </div>
         </div>
 
-        <!-- Результаты тестирования -->
         <div id="results" class="section">
             <h2>Результаты тестирования</h2>
             <table class="results-table">
                 <thead>
                     <tr>
                         <th>Курс</th>
-                        <th>Тест</th>
-                        <th>Результат</th>
+                        <th>Попытки</th>
+                        <th>Лучший результат</th>
+                        @if (User.IsInRole("Тренер"))
+                        {
+                            <th>Действия</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Основы программирования</td>
-                        <td>Тест 1</td>
-                        <td>85%</td>
-                    </tr>
-                    <tr>
-                        <td>Веб-разработка</td>
-                        <td>Тест 1</td>
-                        <td>90%</td>
-                    </tr>
+                    @foreach (var result in Model.Results)
+                    {
+                        var course = Model.Courses.FirstOrDefault(c => c.ID.ToString() == result.Course);
+                        <tr>
+                            <td>@(course != null ? course.Title : result.Course)</td>
+                            <td>@result.AttemptsUsed</td>
+                            <td>@(result.BestResult.HasValue ? result.BestResult.Value + "%" : "Нет данных")</td>
+                            @if (User.IsInRole("Тренер"))
+                            {
+                                <td>
+                                    <button class="btn" onclick="resetAttempts('@result.Login', @result.Course)">Сбросить попытки</button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                    @if (!Model.Results.Any())
+                    {
+                        <tr>
+                            <td colspan="@(User.IsInRole("Тренер") ? "4" : "3")">Нет завершённых курсов</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
-
-    <script>
-        // Функция для переключения между разделами
-        function showSection(sectionId) {
-            // Скрываем все разделы
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Показываем выбранный раздел
-            document.getElementById(sectionId).classList.add('active');
-        }
-
-        // Функция для начала курса
-        function startCourse(courseId) {
-            alert(`Начало курса с ID: ${courseId}`);
-            // Здесь можно добавить логику для перехода на страницу курса
-        }
-    </script>
 </body>
 </html>

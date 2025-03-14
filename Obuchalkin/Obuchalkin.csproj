@@ -152,6 +152,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CoachIndexViewModel.cs" />
+    <Compile Include="Models\Course.cs" />
     <Compile Include="Models\ModelBD.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -167,12 +169,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ModelBD.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Progress.cs">
       <DependentUpon>ModelBD.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Result.cs">
       <DependentUpon>ModelBD.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\StudentCourseViewModel.cs" />
+    <Compile Include="Models\StudentIndexViewModel.cs" />
+    <Compile Include="Models\Test.cs" />
     <Compile Include="Models\User.cs">
       <DependentUpon>ModelBD.tt</DependentUpon>
     </Compile>
@@ -279,8 +285,8 @@
     <Content Include="Views\Coach\Result.cshtml" />
     <Content Include="Views\Student\Index.cshtml" />
     <Content Include="Views\Authorization\Index.cshtml" />
-    <Content Include="Views\Student\Curses.cshtml" />
-    <Content Include="Views\Coach\CreateCours.cshtml" />
+    <Content Include="Views\Student\Course.cshtml" />
+    <Content Include="Views\Coach\CreateCourse.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

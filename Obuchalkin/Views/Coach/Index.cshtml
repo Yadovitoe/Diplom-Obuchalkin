@@ -1,55 +1,215 @@
-﻿@{
-    Layout = null; // Отключаем макет
+﻿@model Obuchalkin.Models.CoachIndexViewModel
+
+@{
+    Layout = null;
     ViewBag.Title = "Тренер";
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
-    <title>Специалист по обучению</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление курсами</title>
     <link rel="stylesheet" href="~/Content/Styles/Coach.css" />
+    <style>
+        .accordion {
+            cursor: pointer;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            transition: 0.4s;
+        }
+
+            .accordion:hover, .accordion.active {
+                background-color: #ddd;
+            }
+
+        .panel {
+            padding: 0 18px;
+            display: none;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .course-item {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
         <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
-        <a href="@Url.Action("Logout", "Account")">Выйти</a>
+        <a href="@Url.Action("Logout", "Authorization")">Выйти</a>
     </div>
 
     <div class="container">
-        <!-- Навигация -->
-        <div class="navigation">
-            <a href="#courses" class="btn">Управление курсами и тестами</a>
-            <a href="#results" class="btn">Результаты обучающихся</a>
+        <div class="section">
+            <button class="btn" onclick="location.href='@Url.Action("CreateCourse", "Coach")'">Создать новый курс</button>
         </div>
 
-        <!-- Управление группами пользователей -->
-        <div id="groups" class="section">
-            <h2>Управление группами пользователей</h2>
-            <button class="btn">Создать новую группу</button>
-            <div class="group-list">
-                <div class="group-item">
-                    <h3>Группа 1</h3>
-                    <p>Количество пользователей: 15</p>
-                    <div class="actions">
-                        <button class="btn">Назначить курс</button>
-                        <button class="btn">Просмотреть</button>
-                        <button class="btn">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-                <div class="group-item">
-                    <h3>Группа 2</h3>
-                    <p>Количество пользователей: 10</p>
-                    <div class="actions">
-                        <button class="btn">Назначить курс</button>
-                        <button class="btn">Просмотреть</button>
-                        <button class="btn">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
+        <div class="section">
+            <h2>Список курсов</h2>
+            <div class="course-list">
+                @if (Model != null && Model.Courses != null && Model.Courses.Any())
+                {
+                    foreach (var course in Model.Courses)
+                    {
+                        <div class="course-item">
+                            <button class="accordion">@course.Title</button>
+                            <div class="panel">
+                                <p><strong>Описание:</strong> @course.Description</p>
+                                @if (course.Pages.Any())
+                                {
+                                    <p><strong>Страницы:</strong></p>
+                                    <ul>
+                                        @foreach (var page in course.Pages)
+                                        {
+                                            <li>
+                                                @Html.Raw(page.Content)
+                                                @if (!string.IsNullOrEmpty(page.ImagePath))
+                                                {
+                                                    <br />
+                                                    <img src="@Url.Content(page.ImagePath)" alt="Страница" style="max-width: 200px;" />
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                @if (course.Tests.Any())
+                                {
+                                    <p><strong>Тесты (время: @(course.TestTimeLimit.HasValue ? course.TestTimeLimit + " мин" : "не ограничено")):</strong></p>
+                                    <ul>
+                                        @foreach (var test in course.Tests)
+                                        {
+                                            <li>@test.Question (@test.Type)</li>
+                                        }
+                                    </ul>
+                                }
+
+                                <!-- Таблица прогресса -->
+                                <h3>Прогресс</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Логин</th>
+                                            <th>Курс</th>
+                                            <th>Раздел</th>
+                                            <th>Страница</th>
+                                            <th>Тест завершён</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var progress in Model.Progresses.Where(p => p.Course == course.ID.ToString()))
+                                        {
+                                            <tr>
+                                                <td>@progress.Login</td>
+                                                <td>@progress.Course</td>
+                                                <td>@progress.Section</td>
+                                                <td>@progress.Page</td>
+                                                <td>@(progress.TestCompleted ? "Да" : "Нет")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                <!-- Таблица результатов -->
+                                <h3>Результаты</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Логин</th>
+                                            <th>Курс</th>
+                                            <th>Попытки</th>
+                                            <th>Лучший результат</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var result in Model.Results.Where(r => r.Course == course.ID.ToString()))
+                                        {
+                                            <tr>
+                                                <td>@result.Login</td>
+                                                <td>@result.Course</td>
+                                                <td>@result.AttemptsUsed</td>
+                                                <td>@(result.BestResult.HasValue ? result.BestResult.Value + "%" : "Нет данных")</td>
+                                                <td>
+                                                    <button class="btn" onclick="resetAttempts('@result.Login', @result.Course)">Сбросить попытки</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                        @if (!Model.Results.Any(r => r.Course == course.ID.ToString()))
+                                        {
+                                            <tr>
+                                                <td colspan="5">Нет результатов</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Курсов пока нет.</p>
+                }
             </div>
         </div>
     </div>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+
+        function resetAttempts(login, courseId) {
+            if (confirm('Сбросить попытки для ' + login + ' по курсу ' + courseId + '?')) {
+                fetch('@Url.Action("ResetTestAttempts", "Student")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ login: login, courseId: courseId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Попытки сброшены!');
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => alert('Ошибка сброса попыток: ' + error));
+            }
+        }
+    </script>
 </body>
 </html>

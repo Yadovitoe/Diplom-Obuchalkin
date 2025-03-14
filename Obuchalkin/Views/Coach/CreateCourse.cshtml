@@ -1,0 +1,128 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Создание курса</title>
+    <link rel="stylesheet" href="~/Content/Styles/CourseCreation.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <div class="header">
+        <img src="~/Content/Image/Logo.png" alt="Логотип" class="logo" />
+        <h1>Создание курса</h1>
+        <a href="@Url.Action("Logout", "Authorization")">Выйти</a>
+    </div>
+
+    <div class="container">
+        <form action="@Url.Action("CreateCourse", "Coach")" method="post" enctype="multipart/form-data" id="courseForm">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="Title">Название курса:</label>
+                <input type="text" id="Title" name="Title" required />
+                @if (TempData["Error"] != null)
+                {
+                    <span class="error">@TempData["Error"]</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="Description">Описание курса:</label>
+                <textarea id="Description" name="Description" rows="4" required></textarea>
+            </div>
+
+            <div class="pages-section">
+                <h2>Страницы курса</h2>
+                <div id="coursePages"></div>
+                <button type="button" class="btn" onclick="addPage()">Добавить страницу</button>
+            </div>
+
+            <div class="test-section">
+                <h2>Создание тестов</h2>
+                <div class="form-group">
+                    <label for="testTimeLimit">Время на прохождение теста (в минутах):</label>
+                    <input type="number" id="testTimeLimit" name="testTimeLimit" min="1" placeholder="Не ограничено" />
+                </div>
+                <div id="testQuestions"></div>
+                <button type="button" class="btn" onclick="addMultipleChoiceQuestion()">Добавить вопрос с выбором</button>
+                <button type="button" class="btn" onclick="addTextInputQuestion()">Добавить вопрос с вводом текста</button>
+            </div>
+
+            <button type="submit" class="btn btn-save">Сохранить курс</button>
+        </form>
+    </div>
+
+    <script>
+        let pageCount = 0;
+        let questionCount = 0;
+
+        function addPage() {
+            pageCount++;
+            const pagesDiv = document.getElementById('coursePages');
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            pageDiv.innerHTML = `
+                    <textarea name="pageContents" rows="4" placeholder="Введите текст страницы (используйте <b> для жирного, <i> для курсива)"></textarea>
+                    <input type="file" name="pageImages" accept="image/*" />
+                    <button type="button" onclick="applyBold(this)">Жирный</button>
+                    <button type="button" onclick="applyItalic(this)">Курсив</button>
+                `;
+            pagesDiv.appendChild(pageDiv);
+        }
+
+        function applyBold(button) {
+            const textarea = button.previousElementSibling.previousElementSibling;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            if (selectedText) {
+                textarea.value = textarea.value.substring(0, start) + '<b>' + selectedText + '</b>' + textarea.value.substring(end);
+            }
+        }
+
+        function applyItalic(button) {
+            const textarea = button.previousElementSibling.previousElementSibling.previousElementSibling;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            if (selectedText) {
+                textarea.value = textarea.value.substring(0, start) + '<i>' + selectedText + '</i>' + textarea.value.substring(end);
+            }
+        }
+
+        function addMultipleChoiceQuestion() {
+            questionCount++;
+            const questionsDiv = document.getElementById('testQuestions');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                    <input type="text" name="testQuestions" placeholder="Введите вопрос..." required />
+                    <input type="hidden" name="testTypes" value="MultipleChoice" />
+                    <input type="text" name="testOptions[${questionCount - 1}][]" placeholder="Вариант 1" required />
+                    <input type="text" name="testOptions[${questionCount - 1}][]" placeholder="Вариант 2" required />
+                    <input type="text" name="testOptions[${questionCount - 1}][]" placeholder="Вариант 3" required />
+                    <input type="text" name="testOptions[${questionCount - 1}][]" placeholder="Вариант 4" required />
+                    <input type="number" name="correctAnswers" placeholder="Номер правильного ответа (1-4)" min="1" max="4" required />
+                `;
+            questionsDiv.appendChild(questionDiv);
+        }
+
+        function addTextInputQuestion() {
+            questionCount++;
+            const questionsDiv = document.getElementById('testQuestions');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                    <input type="text" name="testQuestions" placeholder="Введите вопрос..." required />
+                    <input type="hidden" name="testTypes" value="TextInput" />
+                    <input type="text" name="correctAnswers" placeholder="Правильный ответ" required />
+                `;
+            questionsDiv.appendChild(questionDiv);
+        }
+    </script>
+</body>
+</html>

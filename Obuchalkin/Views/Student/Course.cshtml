@@ -1,0 +1,240 @@
+﻿@model Obuchalkin.Models.StudentCourseViewModel
+
+@{
+    Layout = null;
+    var hasTest = Model.Course.Tests.Any();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Курс: @Model.Course.Title</title>
+    <link rel="stylesheet" href="~/Content/Styles/Course.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        .test-form {
+            margin-top: 20px;
+        }
+
+        .test-question {
+            margin-bottom: 15px;
+        }
+
+        .timer {
+            font-weight: bold;
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .section-content {
+            flex-grow: 1;
+        }
+
+        .next-page-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .test-info {
+            margin: 20px 0;
+        }
+    </style>
+    <script defer>
+        let currentPage = @Model.CurrentPage;
+        const courseId = @Model.Course.ID;
+        const totalPages = @Model.Course.Pages.Count;
+        const hasTest = @hasTest.ToString().ToLower();
+        const timeLimit = @(Model.Course.TestTimeLimit.HasValue ? Model.Course.TestTimeLimit.Value * 60 : 0);
+        const attemptsUsed = @Model.AttemptsUsed;
+        let timeLeft = timeLimit;
+        let testStarted = false;
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        }
+
+        function loadPage(pageNumber) {
+            currentPage = pageNumber;
+            saveProgress();
+            window.location.href = '@Url.Action("Course", "Student")' + '?id=' + courseId;
+        }
+
+        function loadTest() {
+            currentPage = totalPages + 1;
+            saveProgress();
+            window.location.href = '@Url.Action("Course", "Student")' + '?id=' + courseId;
+        }
+
+        function nextPage() {
+            currentPage++;
+            saveProgress();
+            window.location.href = '@Url.Action("Course", "Student")' + '?id=' + courseId;
+        }
+
+        function saveProgress() {
+            fetch('@Url.Action("SaveProgress", "Student")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ courseId: courseId, pageNumber: currentPage, testCompleted: false })
+            })
+            .then(response => response.json())
+            .catch(error => alert('Ошибка сохранения прогресса: ' + error));
+        }
+
+        function startTest() {
+            const startButton = document.getElementById('start-test-btn');
+            if (attemptsUsed >= 2) {
+                startButton.disabled = true;
+                startButton.textContent = 'Попытки исчерпаны. Обратитесь к тренеру.';
+                return;
+            }
+            testStarted = true;
+            document.getElementById('test-info').style.display = 'none';
+            document.getElementById('test-section').style.display = 'block';
+            startTimer();
+        }
+
+        function startTimer() {
+            const testSection = document.getElementById('test-section');
+            if (testSection && timeLimit > 0 && !@Model.Progress.TestCompleted.ToString().ToLower()) {
+                let timerElement = document.getElementById('timer');
+                if (!timerElement) {
+                    timerElement = document.createElement('p');
+                    timerElement.id = 'timer';
+                    timerElement.className = 'timer';
+                    testSection.insertBefore(timerElement, testSection.firstChild);
+                }
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = `Осталось времени: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        submitTest();
+                    }
+                }, 1000);
+            }
+        }
+
+        function submitTest() {
+            const form = document.getElementById('test-form');
+            if (!form) {
+                alert('Форма теста не найдена!');
+                return;
+            }
+            const formData = new FormData(form);
+            const answers = [];
+            for (let i = 0; i < @Model.Course.Tests.Count; i++) {
+                answers.push(formData.get(`answers[${i}]`));
+            }
+
+            fetch('@Url.Action("SubmitTest", "Student")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ courseId: courseId, answers: answers })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Тест завершён! Ваш результат: ' + data.score + '%');
+                    window.location.href = '@Url.Action("Course", "Student")' + '?id=' + courseId;
+                } else {
+                    alert('Ошибка при отправке теста: ' + (data.message || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => alert('Ошибка отправки теста: ' + error));
+        }
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h2>Страницы курса</h2>
+        <ul class="sections-list">
+            @for (int i = 0; i < Model.Course.Pages.Count; i++)
+            {
+                <li><a href="#" onclick="loadPage(@(i + 1))">Страница @(i + 1)</a></li>
+            }
+            @if (Model.Course.Tests.Any())
+            {
+                <li><a href="#" onclick="loadTest()">Тест</a></li>
+            }
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="content">
+            <h1 id="section-title">@Model.Course.Title</h1>
+            <div id="section-content" class="section-content">
+                @if (Model.CurrentPage <= Model.Course.Pages.Count)
+                {
+                    @Html.Raw(Model.Course.Pages[Model.CurrentPage - 1].Content)
+                    if (!string.IsNullOrEmpty(Model.Course.Pages[Model.CurrentPage - 1].ImagePath))
+                    {
+                        <img src="@Url.Content(Model.Course.Pages[Model.CurrentPage - 1].ImagePath)" alt="Страница" class="course-image" />
+                    }
+                }
+                else if (Model.CurrentPage > Model.Course.Pages.Count && Model.Course.Tests.Any() && !Model.Progress.TestCompleted)
+                {
+                    <div id="test-info" class="test-info">
+                        <p>Время на тест: @(Model.Course.TestTimeLimit.HasValue ? Model.Course.TestTimeLimit.Value + " мин" : "Без ограничения")</p>
+                        <p>Количество попыток: @Model.AttemptsUsed из 2</p>
+                        <p>Количество вопросов: @Model.Course.Tests.Count</p>
+                        <button id="start-test-btn" class="btn" onclick="startTest()">Начать тест</button>
+                    </div>
+                    <div id="test-section" style="display: none;">
+                        <form id="test-form" class="test-form">
+                            @for (int i = 0; i < Model.Course.Tests.Count; i++)
+                            {
+                                var test = Model.Course.Tests[i];
+                                <div class="test-question">
+                                    <p>@test.Question</p>
+                                    @if (test.Type == "MultipleChoice")
+                                    {
+                                        for (int j = 0; j < test.Options.Count; j++)
+                                        {
+                                            <label>
+                                                <input type="radio" name="answers[@i]" value="@(j + 1)" required /> @test.Options[j]
+                                            </label><br />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input type="text" name="answers[@i]" required />
+                                    }
+                                </div>
+                            }
+                            <button type="button" class="btn" onclick="submitTest()">Отправить тест</button>
+                        </form>
+                    </div>
+                }
+                else if (Model.Progress.TestCompleted)
+                {
+                    <p>Курс завершён! Тест пройден.</p>
+                }
+            </div>
+            @if (Model.CurrentPage <= Model.Course.Pages.Count && Model.CurrentPage < Model.Course.Pages.Count + (Model.Course.Tests.Any() ? 1 : 0))
+            {
+                <div class="next-page-btn">
+                    @if (Model.CurrentPage == Model.Course.Pages.Count && Model.Course.Tests.Any() && !Model.Progress.TestCompleted)
+                    {
+                        <button class="btn" onclick="loadTest()">Пройти тест</button>
+                    }
+                    else
+                    {
+                        <button class="btn" onclick="nextPage()">Следующая страница</button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

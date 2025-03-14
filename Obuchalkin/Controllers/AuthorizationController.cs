@@ -26,7 +26,7 @@ namespace Obuchalkin.Controllers
                     {
                         case "Обучающийся":
                             return RedirectToAction("Index", "Student");
-                        case "Специалист по обучению":
+                        case "Тренер":
                             return RedirectToAction("Index", "Coach");
                         case "Менеджер":
                             return RedirectToAction("Index", "Manager");
